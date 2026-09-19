@@ -1,0 +1,291 @@
+/* ---- Section Labels ---- */
+.section-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---- Controls & Input Fields ---- */
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
+
+select,
+input[type="date"] {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  appearance: none;
+}
+
+select:focus,
+input[type="date"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ---- Toggle Button Row ---- */
+.toggle-row {
+  display: flex;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 7px 8px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.15s, color 0.15s;
+}
+
+.toggle-btn.active {
+  background: var(--accent);
+  color: #041216;
+  font-weight: 600;
+}
+
+/* ---- Range Slider ---- */
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.range-value {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  float: right;
+}
+
+/* ---- Action Buttons ---- */
+.run-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  background: var(--accent);
+  color: #041216;
+  border: none;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 0 0 rgba(62,214,232,0);
+}
+
+.run-btn:hover {
+  box-shadow: 0 0 22px var(--accent-glow);
+}
+
+.run-btn:active {
+  transform: scale(0.98);
+}
+
+.run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ---- Upload Zone ---- */
+.upload-zone {
+  border: 1px dashed var(--line);
+  border-radius: 7px;
+  padding: 16px 10px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.upload-zone:hover {
+  border-color: var(--accent-dim);
+  color: var(--text-dim);
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: var(--accent-dim);
+  padding: 8px;
+}
+
+.upload-thumb {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.upload-filename {
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: var(--mono);
+}
+
+.upload-clear {
+  color: var(--danger);
+  font-size: 10.5px;
+  font-family: var(--mono);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ---- Stats Cards & Analysis ---- */
+.stat-card {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-value .unit {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.stat-value.accent {
+  color: var(--accent);
+}
+
+.stat-value.warn {
+  color: var(--warn);
+}
+
+.confidence-bar-track {
+  height: 6px;
+  background: var(--panel-raised, #17263d);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.confidence-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.severity-badge.moderate {
+  background: var(--warn-dim);
+  color: var(--warn);
+}
+
+.severity-badge.severe {
+  background: rgba(240, 87, 79, 0.18);
+  color: var(--danger);
+}
+
+.severity-badge.low {
+  background: rgba(78, 216, 138, 0.15);
+  color: var(--safe);
+}
+
+/* ---- Run Log ---- */
+.log {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  line-height: 1.7;
+  max-height: 130px;
+  overflow-y: auto;
+}
+
+.log .entry {
+  display: flex;
+  gap: 8px;
+}
+
+.log .entry .t {
+  color: var(--accent-dim);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.empty-state .icon {
+  font-size: 26px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}

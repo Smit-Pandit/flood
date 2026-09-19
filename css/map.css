@@ -1,0 +1,258 @@
+/* ---- Leaflet Base Override ---- */
+.leaflet-container {
+  background: #08090b !important;
+}
+
+/* ---- Map center wrapper ---- */
+.map-wrap {
+  position: relative;
+  background: var(--panel);
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+}
+
+@media (max-width: 980px) {
+  .map-wrap {
+    height: 60vh;
+  }
+}
+
+/* ---- Map Coordinates Overlay ---- */
+.map-overlay-topleft {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 500;
+  background: rgba(10, 18, 29, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  backdrop-filter: blur(4px);
+}
+
+.map-overlay-topleft .coord {
+  color: var(--accent);
+}
+
+/* ---- Legend Box ---- */
+.legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 500;
+  background: rgba(10, 18, 29, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 11px;
+  color: var(--text-dim);
+  backdrop-filter: blur(4px);
+  display: flex;
+  gap: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+/* ---- Radar Scan Sweep Overlay (shown during inference) ---- */
+.scan-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 450;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.scan-overlay.active {
+  opacity: 1;
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  left: -140px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-glow) 45%,
+    rgba(62, 214, 232, 0.85) 50%,
+    var(--accent-glow) 55%,
+    transparent
+  );
+  animation: sweep 1.8s linear infinite;
+}
+
+@keyframes sweep {
+  from { left: -140px; }
+  to { left: 100%; }
+}
+
+.scan-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(10, 18, 29, 0.75);
+  padding: 8px 16px;
+  border: 1px solid var(--accent-dim);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ---- Custom Uploaded Image Stage ---- */
+.image-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  background: #060c14;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-stage.active {
+  display: flex;
+}
+
+.image-stage-inner {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#uploadedImagePreview {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 220px);
+  filter: saturate(0.85) contrast(1.05);
+}
+
+#maskCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.back-to-map-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 310;
+  background: rgba(10, 18, 29, 0.85);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.back-to-map-btn:hover {
+  color: var(--text);
+  border-color: var(--accent-dim);
+}
+
+/* ---- Before/After Compare Slider ---- */
+.compare-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+}
+
+.compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  pointer-events: auto;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.compare-handle-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.compare-handle-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #041216;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 0 14px var(--accent-glow), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.compare-label {
+  position: absolute;
+  top: 12px;
+  z-index: 401;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(6, 7, 8, 0.75);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.compare-label-before {
+  left: 12px;
+}
+
+.compare-label-after {
+  right: 12px;
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}

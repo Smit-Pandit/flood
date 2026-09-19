@@ -1,0 +1,73 @@
+:root {
+  /* ---- Design tokens ---- */
+  --bg: #060708;
+  --panel: #0A0C0E;
+  --panel-raised: #16191D;
+  --panel-2: #121417;
+  --line: #26292E;
+  --line-soft: #1C1E22;
+  --text: #E7EEF6;
+  --text-dim: #8DA0B8;
+  --text-faint: #55687F;
+  --accent: #3ED6E8;      /* radar / water-signature cyan */
+  --accent-dim: #1F6D78;
+  --accent-glow: rgba(62, 214, 232, 0.35);
+  --warn: #F2A93B;
+  --warn-dim: #6b5326;
+  --danger: #F0574F;
+  --safe: #4ED88A;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  --sans: -apple-system, "Segoe UI", Inter, Roboto, ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(62,214,232,0.06), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(62,214,232,0.04), transparent 45%);
+}
+
+/* ---- Topographic contour texture (signature background motif) ---- */
+.contour-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.15;
+  pointer-events: none;
+  background-image: repeating-radial-gradient(circle at 20% 30%, transparent 0, transparent 38px, var(--line-soft) 39px, transparent 40px);
+  mask-image: linear-gradient(to bottom, black, transparent 70%);
+}
+
+/* ---- Custom Scrollbars ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+/* ---- Reduced Motion Support ---- */
+@media (prefers-reduced-motion: reduce) {
+  .dot, .scan-line {
+    animation: none !important;
+  }
+}

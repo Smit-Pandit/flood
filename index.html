@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FloodWatch — Satellite Flood Monitoring & Prithvi 2.0</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  
+  <!-- Application Modular CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/map.css" />
+</head>
+<body>
+
+  <!-- Topographic contour background motif -->
+  <div class="contour-bg"></div>
+
+  <div class="app">
+    <!-- ===================== TOP BAR ===================== -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">FW</div>
+        <div class="brand-text">
+          <span class="name">FloodWatch</span>
+          <span class="sub">NASA-IBM Prithvi 2.0 &middot; Flood Extent & Population Exposure</span>
+        </div>
+      </div>
+      <div class="status-pill">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Model idle</span>
+      </div>
+    </header>
+
+    <!-- ===================== MAIN 3-COLUMN LAYOUT ===================== -->
+    <main class="layout">
+
+      <!-- ---------- LEFT: CONTROLS PANEL ---------- -->
+      <aside class="panel" aria-label="Controls">
+        <p class="section-label">Monitoring Site</p> 
+        <div class="field">
+          <label for="regionSelect">Preset Basin</label>
+          <select id="regionSelect">
+            <option value="assam">Assam — Brahmaputra Basin (398/km²)</option>
+            <option value="bihar">Bihar — Kosi River (1,106/km²)</option>
+            <option value="kerala">Kerala — Periyar Basin (860/km²)</option>
+          </select>
+        </div>  
+
+        <!-- <div class="field">
+          <label for="dateInput">Acquisition date</label>
+          <input type="date" id="dateInput" value="2026-08-14" />
+        </div> -->
+
+        <div class="field">
+          <label>Imagery source</label>
+          <div class="toggle-row">
+            <button type="button" class="toggle-btn active" data-source="sar">SAR (S1)</button>
+            <button type="button" class="toggle-btn" data-source="optical">Optical (S2)</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Compare mode</label>
+          <div class="toggle-row">
+            <button type="button" class="toggle-btn active" data-mode="single">Single pass</button>
+            <!-- <button type="button" class="toggle-btn" data-mode="change">Before / after</button> -->
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="opacitySlider">Mask opacity <span class="range-value" id="opacityValue">65%</span></label>
+          <input type="range" id="opacitySlider" min="10" max="100" value="65" />
+        </div>
+
+        <!-- Settlement Population Density Slider -->
+        <div class="field">
+          <label for="densitySlider">Settlement Density <span class="range-value" id="densityValue">398 / km²</span></label>
+          <input type="range" id="densitySlider" min="100" max="1500" step="25" value="398" />
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-faint); margin-top:3px; font-family:var(--mono);">
+            <span>Rural (200)</span>
+            <span>Valley (400)</span>
+            <span>Gangetic/Urban (1100+)</span>
+          </div>
+        </div>
+
+        <p class="section-label" style="margin-top:24px;">Custom Scene & Geolocation</p>
+        <div class="field">
+          <div class="upload-zone" id="uploadZone">
+            <div id="uploadZoneContent">
+              Drop recent satellite scene / upload image<br />to classify water & calculate population impact
+              <div style="margin-top:6px; color:var(--text-faint); font-size:10.5px;">GeoTIFF, PNG, JPG (Auto-Geolocated)</div>
+            </div>
+            <input type="file" id="fileInput" accept=".tif,.tiff,.png,.jpg,.jpeg" style="display:none;" />
+          </div>
+        </div>
+
+        <!-- Custom Image Geolocation Coordinates HUD -->
+        <div class="field" id="coordsField" style="background:var(--panel-2); padding:10px; border:1px solid var(--line); border-radius:6px;">
+          <label style="font-size:11px; margin-bottom:5px; display:flex; justify-content:space-between;">
+            <span>Target Coordinates</span>
+            <button type="button" id="useMapCenterBtn" style="background:none; border:none; color:var(--accent); font-size:10.5px; font-family:var(--mono); cursor:pointer; padding:0; text-decoration:underline;">Use map center</button>
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <div>
+              <span style="font-family:var(--mono); font-size:10px; color:var(--text-faint);">LAT:</span>
+              <input type="number" step="0.0001" id="customLat" value="26.2006" style="padding:5px 7px; font-size:11.5px; font-family:var(--mono);" />
+            </div>
+            <div>
+              <span style="font-family:var(--mono); font-size:10px; color:var(--text-faint);">LON:</span>
+              <input type="number" step="0.0001" id="customLon" value="92.9376" style="padding:5px 7px; font-size:11.5px; font-family:var(--mono);" />
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="run-btn" id="runBtn" style="margin-top:12px;">Run Prithvi 2.0 Detection</button>
+      </aside>
+
+      <!-- ---------- CENTER: MAP VIEW & IMAGE STAGE ---------- -->
+      <section class="map-wrap" aria-label="Interactive Map and Visuals">
+        <!-- Interactive Leaflet Map -->
+        <div id="map"></div>
+
+        <!-- Coordinates Overlay HUD -->
+        <div class="map-overlay-topleft">
+          <div id="coordLabel">LAT <span class="coord">--.----</span> &nbsp; LON <span class="coord">--.----</span></div>
+        </div>
+
+        <!-- Map Legend -->
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:var(--accent); box-shadow:0 0 6px var(--accent-glow);"></span> Flood water (Inundated)</div>
+          <div class="legend-item"><span class="swatch" style="background:#274156; border:1px solid rgba(255,255,255,0.2);"></span> Permanent water (River/Basin)</div>
+          <div class="legend-item"><span class="swatch" style="background:transparent; border:1px solid var(--line-soft);"></span> Dry land</div>
+        </div>
+
+        <!-- Radar Scan Sweep Overlay -->
+        <div class="scan-overlay" id="scanOverlay">
+          <div class="scan-line"></div>
+          <div class="scan-label" id="scanLabel">Running Prithvi 2.0 Inference…</div>
+        </div>
+
+        <!-- Before / After Compare Split Slider -->
+        <div class="compare-slider" id="compareSlider" style="display:none;">
+          <div class="compare-label compare-label-before">Before (Baseline)</div>
+          <div class="compare-label compare-label-after">After (Recent Upload)</div>
+          <div class="compare-handle" id="compareHandle">
+            <div class="compare-handle-line"></div>
+            <div class="compare-handle-grip">&#8596;</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- RIGHT: STATS & RUN LOG PANEL ---------- -->
+      <aside class="panel" id="statsPanel" aria-label="Analysis Results">
+        <p class="section-label">Demographics & Impact</p>
+        
+        <!-- Empty State Prompt -->
+        <div class="empty-state" id="emptyState">
+          <div class="icon">◎</div>
+          Select a basin or upload a scene<br />to calculate inundated surface area<br />and population exposure.
+        </div>
+
+        <!-- Results Block -->
+        <div id="resultsBlock" style="display:none;">
+          <div class="stat-card">
+            <div class="stat-label">Flooded area (Inundated)</div>
+            <div class="stat-value accent" id="statArea">— <span class="unit">km²</span></div>
+          </div>
+
+          <div class="stat-card" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <div class="stat-label">Permanent water</div>
+              <div class="stat-value" id="statPermanentWater" style="font-size:17px; color:#8DA0B8;">— <span class="unit">km²</span></div>
+            </div>
+            <div>
+              <div class="stat-label">Total water</div>
+              <div class="stat-value" id="statTotalWater" style="font-size:17px;">— <span class="unit">km²</span></div>
+            </div>
+          </div>
+
+          <!-- Comprehensive Population Exposure Card -->
+          <div class="stat-card" style="border-left: 3px solid var(--warn);">
+            <div class="stat-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Est. Population Exposed</span>
+              <span id="statPopDensityTag" style="color:var(--accent); font-size:10.5px; font-family:var(--mono);">398 / km²</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">
+              <div class="stat-value warn" id="statPop" style="font-size:26px;">—</div>
+              <div id="statPopFull" style="font-size:11.5px; color:var(--text-dim); font-family:var(--mono);"></div>
+            </div>
+            
+            <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--line); font-size:11px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <div>
+                <span style="color:var(--text-faint);">🚨 Evacuation Priority:</span>
+                <div id="statEvacuation" style="font-family:var(--mono); color:var(--danger); font-weight:600; margin-top:2px;">—</div>
+              </div>
+              <div>
+                <span style="color:var(--text-faint);">🏘️ Submerged Clusters:</span>
+                <div id="statSettlements" style="font-family:var(--mono); color:var(--text); font-weight:600; margin-top:2px;">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <div class="stat-label">Severity</div>
+              <div id="statSeverity"></div>
+            </div>
+            <div>
+              <div class="stat-label">Center (Lat / Lon)</div>
+              <div id="statCoords" style="font-family:var(--mono); font-size:11.5px; color:var(--accent); margin-top:4px;">—</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Model confidence</div>
+            <div class="stat-value" id="statConf" style="font-size:16px;">—</div>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar-fill" id="confFill" style="width:0%;"></div>
+            </div>
+          </div>
+
+          <p class="section-label" style="margin-top:22px;">Run log</p>
+          <div class="log" id="runLog"></div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Leaflet JavaScript Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+  <!-- Modular Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/inference.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
